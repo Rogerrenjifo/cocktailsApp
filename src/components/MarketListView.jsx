@@ -3,14 +3,14 @@ import { calculateChangePercent, formatBs } from '../lib/userTradingEngine'
 export default function MarketListView({ items, tradingState, onRowClick, emptyMessage }) {
   if (items.length === 0) {
     return (
-      <section className="card market-empty" data-testid="market-empty-state">
+      <section className="card market-empty">
         {emptyMessage || 'Aún no hay cockteles disponibles en el mercado.'}
       </section>
     )
   }
 
   return (
-    <section className="market-table-section card" data-testid="market-list">
+    <section className="market-table-section card">
       <table className="market-table">
         <thead>
           <tr>
@@ -36,18 +36,16 @@ export default function MarketListView({ items, tradingState, onRowClick, emptyM
                 key={item.id}
                 className="market-row"
                 onClick={() => onRowClick(item, trading)}
-                data-testid={`market-row-${item.id}`}
                 style={{ cursor: 'pointer' }}
               >
-                <td className="col-nombre" data-testid={`market-row-nombre-${item.id}`}>
+                <td className="col-nombre">
                   {item.nombre}
                 </td>
-                <td className={`col-precio precio-${priceTrend}`} data-testid={`market-row-precio-${item.id}`}>
+                <td className={`col-precio precio-${priceTrend}`}>
                   {formatBs(trading.precioActualBs)}
                 </td>
                 <td
                   className={`col-cambio ${changePercent > 0 ? 'positivo' : changePercent < 0 ? 'negativo' : 'neutro'}`}
-                  data-testid={`market-row-cambio-${item.id}`}
                 >
                   {isZeroChange ? '—' : (changePercent >= 0 ? '+' : '')}{isZeroChange ? '' : changePercent.toFixed(2) + '%'}
                 </td>

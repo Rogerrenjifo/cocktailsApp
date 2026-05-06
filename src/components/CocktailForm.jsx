@@ -61,7 +61,6 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
     <form
       className={`cocktail-form card${isEditing ? ' editing' : ''}`}
       onSubmit={handleSubmit}
-      data-testid="cocktail-form"
     >
       <h2 className="form-title">
         {isEditing ? '✏️ Editar cocktail' : '➕ Agregar cocktail'}
@@ -75,10 +74,9 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
           value={nombre}
           onChange={e => setNombre(e.target.value)}
           placeholder="Ej. Mojito Clásico"
-          data-testid="input-nombre"
         />
         {errors.nombre && (
-          <span className="field-error" data-testid="error-nombre">
+          <span className="field-error">
             {errors.nombre}
           </span>
         )}
@@ -92,7 +90,6 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
           value={descripcion}
           onChange={e => setDescripcion(e.target.value)}
           placeholder="Ej. Ron, hierbabuena y limón"
-          data-testid="input-descripcion"
         />
       </div>
 
@@ -107,10 +104,9 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
             value={precioMinimo}
             onChange={e => setPrecioMinimo(e.target.value)}
             placeholder="0.00"
-            data-testid="input-precio-minimo"
           />
           {errors.precioMinimo && (
-            <span className="field-error" data-testid="error-precio-minimo">
+            <span className="field-error">
               {errors.precioMinimo}
             </span>
           )}
@@ -126,10 +122,9 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
             value={precioPromedio}
             onChange={e => setPrecioPromedio(e.target.value)}
             placeholder="0.00"
-            data-testid="input-precio-promedio"
           />
           {errors.precioPromedio && (
-            <span className="field-error" data-testid="error-precio-promedio">
+            <span className="field-error">
               {errors.precioPromedio}
             </span>
           )}
@@ -137,7 +132,7 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
       </div>
 
       {errors.precios && (
-        <span className="field-error" data-testid="error-precios">
+        <span className="field-error">
           {errors.precios}
         </span>
       )}
@@ -145,20 +140,19 @@ export default function CocktailForm({ items, editingItem, onSave, onCancelEdit 
       <div className="form-actions">
         {isEditing ? (
           <>
-            <button type="submit" className="btn btn-primary" data-testid="btn-actualizar">
+            <button type="submit" className="btn btn-primary">
               Actualizar
             </button>
             <button
               type="button"
               className="btn btn-secondary"
               onClick={onCancelEdit}
-              data-testid="btn-cancelar-edicion"
             >
               Cancelar edición
             </button>
           </>
         ) : (
-          <button type="submit" className="btn btn-primary" data-testid="btn-guardar">
+          <button type="submit" className="btn btn-primary">
             Guardar
           </button>
         )}

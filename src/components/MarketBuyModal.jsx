@@ -34,9 +34,9 @@ export default function MarketBuyModal({ item, trading, onBuy, onClose }) {
 
   return (
     <div className="market-modal-overlay" onClick={onClose}>
-      <div className="market-modal" onClick={e => e.stopPropagation()} data-testid="market-modal">
+      <div className="market-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title" data-testid="market-modal-nombre">
+          <h3 className="modal-title">
             {item.nombre}
           </h3>
           <button className="btn-close" onClick={onClose} aria-label="Cerrar">
@@ -47,7 +47,7 @@ export default function MarketBuyModal({ item, trading, onBuy, onClose }) {
         <div className="modal-body">
           <div className="modal-price-section">
             <label>Precio Actual</label>
-            <p className="modal-price-display" data-testid="market-modal-precio">
+            <p className="modal-price-display">
               {formatBs(trading.precioActualBs)}
             </p>
           </div>
@@ -61,21 +61,20 @@ export default function MarketBuyModal({ item, trading, onBuy, onClose }) {
               step="1"
               value={quantityInput}
               onChange={e => setQuantityInput(e.target.value)}
-              data-testid="market-modal-cantidad"
             />
 
-            <div className="modal-total" data-testid="market-modal-total">
+            <div className="modal-total">
               Total: {formatBs(totalEstimado)}
             </div>
 
             {error && (
-              <p className="field-error" data-testid="market-modal-error">
+              <p className="field-error">
                 {error}
               </p>
             )}
 
             {success && (
-              <p className="market-success" data-testid="market-modal-success">
+              <p className="market-success">
                 {success}
               </p>
             )}
@@ -84,14 +83,12 @@ export default function MarketBuyModal({ item, trading, onBuy, onClose }) {
               <button
                 className="btn btn-primary"
                 onClick={handleBuy}
-                data-testid="market-modal-btn-comprar"
               >
                 Comprar
               </button>
               <button
                 className="btn btn-secondary"
                 onClick={onClose}
-                data-testid="market-modal-btn-cerrar"
               >
                 Cerrar
               </button>

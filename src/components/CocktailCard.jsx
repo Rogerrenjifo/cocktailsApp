@@ -1,20 +1,18 @@
 export default function CocktailCard({ item, onEdit, onDelete }) {
   return (
-    <div className="cocktail-card" data-testid={`cocktail-item-${item.id}`}>
+    <div className="cocktail-card">
       <div className="cocktail-card-header">
         <span className="cocktail-name">{item.nombre}</span>
         <div className="cocktail-actions">
           <button
             className="btn btn-secondary btn-sm"
             onClick={() => onEdit(item)}
-            data-testid={`btn-editar-${item.id}`}
           >
             Editar
           </button>
           <button
             className="btn btn-danger btn-sm"
             onClick={() => onDelete(item)}
-            data-testid={`btn-eliminar-${item.id}`}
           >
             Eliminar
           </button>
