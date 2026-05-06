@@ -1,0 +1,480 @@
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0e11;
+  --bg-card:    #161a1f;
+  --bg-input:   #1e2329;
+  --border:     #2b3139;
+  --text:       #eaecef;
+  --text-muted: #848e9c;
+  --accent:     #f0b90b;
+  --accent-h:   #d9a70a;
+  --danger:     #e84142;
+  --danger-h:   #c73535;
+  --secondary:  #2b3139;
+  --secondary-h:#363d47;
+  --radius:     6px;
+  --shadow:     0 4px 20px rgba(0,0,0,.45);
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Typography ── */
+h1 { font-size: 1.5rem; font-weight: 700; }
+h2 { font-size: 1.1rem; font-weight: 600; }
+label { font-size: .8rem; color: var(--text-muted); letter-spacing: .03em; text-transform: uppercase; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .55rem 1.1rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+  white-space: nowrap;
+}
+.btn:active { opacity: .85; }
+.btn-primary  { background: var(--accent);    color: #000; }
+.btn-primary:hover  { background: var(--accent-h); }
+.btn-secondary { background: var(--secondary); color: var(--text); }
+.btn-secondary:hover { background: var(--secondary-h); }
+.btn-danger   { background: var(--danger);    color: #fff; }
+.btn-danger:hover   { background: var(--danger-h); }
+.btn-sm { padding: .35rem .75rem; font-size: .78rem; }
+.btn-full { width: 100%; }
+
+/* ── Card ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* ── Form fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  flex: 1;
+}
+.field input, .field textarea {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: .55rem .75rem;
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .15s;
+}
+.field input:focus {
+  border-color: var(--accent);
+}
+.field input::placeholder { color: var(--text-muted); }
+.field-row {
+  display: flex;
+  gap: 1rem;
+}
+@media (max-width: 480px) { .field-row { flex-direction: column; } }
+.field-error {
+  font-size: .78rem;
+  color: var(--danger);
+  margin-top: .1rem;
+}
+
+/* ── Login ── */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: radial-gradient(ellipse at 50% 0%, #1e2329 0%, var(--bg) 70%);
+}
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.login-logo { font-size: 2.5rem; text-align: center; }
+.login-title { text-align: center; letter-spacing: .03em; }
+.login-subtitle { text-align: center; color: var(--text-muted); font-size: .85rem; }
+.error-msg {
+  background: rgba(232,65,66,.12);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: .55rem .85rem;
+  font-size: .85rem;
+}
+
+/* ── App shell ── */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+.header-actions {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+.app-main {
+  flex: 1;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Cocktail Form ── */
+.cocktail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.cocktail-form.editing {
+  border-color: var(--accent);
+}
+.form-title { margin-bottom: .25rem; }
+.form-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding-top: .5rem;
+}
+
+/* ── Cocktail List ── */
+.cocktail-list-section { }
+.list-title { margin-bottom: 1rem; }
+.empty-state {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem 0;
+  font-size: .9rem;
+}
+.cocktail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Cocktail Card ── */
+.cocktail-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  transition: border-color .15s;
+}
+.cocktail-card:hover { border-color: var(--accent); }
+.cocktail-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.cocktail-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  word-break: break-word;
+}
+.cocktail-actions { display: flex; gap: .4rem; flex-shrink: 0; }
+.cocktail-desc { color: var(--text-muted); font-size: .85rem; }
+.cocktail-prices {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.price-badge {
+  background: var(--secondary);
+  border-radius: 4px;
+  padding: .2rem .55rem;
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+.price-badge.accent strong { color: var(--accent); }
+.price-badge strong { color: var(--text); }
+.cocktail-date {
+  font-size: .72rem;
+  color: var(--text-muted);
+  margin-top: .2rem;
+}
+
+/* ── Market ── */
+.market-page .app-main {
+  max-width: 1100px;
+}
+.market-info {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  color: var(--text-muted);
+  font-size: .85rem;
+}
+.market-tick {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Tabla de mercado */
+.market-table-section {
+  overflow-x: auto;
+}
+.market-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', monospace;
+}
+.market-table thead {
+  background: var(--bg-input);
+  border-bottom: 2px solid var(--border);
+}
+.market-table th {
+  padding: .65rem .75rem;
+  text-align: left;
+  color: var(--text-muted);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.market-table td {
+  padding: .65rem .75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.market-table tbody tr:hover {
+  background: rgba(240, 185, 11, .08);
+  cursor: pointer;
+}
+.col-nombre {
+  min-width: 180px;
+  font-weight: 600;
+}
+.col-precio {
+  min-width: 140px;
+  text-align: right;
+}
+.col-cambio {
+  min-width: 120px;
+  text-align: right;
+}
+.market-table .positivo {
+  color: #2dbd85;
+}
+.market-table .negativo {
+  color: var(--danger);
+}
+.market-table .neutro {
+  color: var(--text-muted);
+}
+
+.market-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem 0;
+  font-size: .9rem;
+}
+
+/* Modal de compra */
+.market-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.market-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow);
+  animation: modalSlideIn .2s ease-out;
+}
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.btn-close:hover {
+  background: var(--bg-input);
+  color: var(--text);
+}
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.modal-price-section {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  text-align: center;
+}
+.modal-price-section label {
+  font-size: .75rem;
+  color: var(--text-muted);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.modal-price-display {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Courier New', monospace;
+  margin: 0;
+}
+.modal-order-section {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+.modal-order-section label {
+  font-size: .75rem;
+  color: var(--text-muted);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.modal-order-section input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: .55rem .75rem;
+  font-size: .9rem;
+  font-family: 'Courier New', monospace;
+}
+.modal-order-section input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.modal-total {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .65rem .75rem;
+  color: var(--text-muted);
+  font-size: .85rem;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+.modal-actions {
+  display: flex;
+  gap: .75rem;
+  margin-top: .5rem;
+}
+.modal-actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 560px) {
+  .app-header {
+    flex-direction: column;
+    gap: .5rem;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+  }
+  .header-actions .btn {
+    flex: 1;
+  }
+  .market-table {
+    font-size: .8rem;
+  }
+  .market-table th,
+  .market-table td {
+    padding: .45rem .4rem;
+  }
+  .market-modal {
+    max-width: 100%;
+    border-radius: 8px 8px 0 0;
+  }
+}
+
