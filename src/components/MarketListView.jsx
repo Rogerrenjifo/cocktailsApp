@@ -29,7 +29,8 @@ export default function MarketListView({ items, tradingState, onRowClick, emptyM
             const precioActual = Number(trading.precioActualBs)
             const precioInicial = Number(item.precioPromedio)
             const priceTrend = precioActual > precioInicial ? 'up' : precioActual < precioInicial ? 'down' : 'neutral'
-            const isZeroChange = Math.abs(changePercent) < 0.01
+            const normalizedChange = Math.abs(changePercent) < 0.005 ? 0 : changePercent
+            const formattedChange = `${normalizedChange > 0 ? '+' : ''}${normalizedChange.toFixed(2)}%`
 
             return (
               <tr
@@ -46,10 +47,10 @@ export default function MarketListView({ items, tradingState, onRowClick, emptyM
                   {formatBs(trading.precioActualBs)}
                 </td>
                 <td
-                  className={`col-cambio ${changePercent > 0 ? 'positivo' : changePercent < 0 ? 'negativo' : 'neutro'}`}
+                  className={`col-cambio ${normalizedChange > 0 ? 'positivo' : normalizedChange < 0 ? 'negativo' : 'neutro'}`}
                   data-testid={`market-row-cambio-${item.id}`}
                 >
-                  {isZeroChange ? '—' : (changePercent >= 0 ? '+' : '')}{isZeroChange ? '' : changePercent.toFixed(2) + '%'}
+                  {formattedChange}
                 </td>
               </tr>
             )

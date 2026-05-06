@@ -141,9 +141,6 @@ export default function UserMarketPage() {
         <span className="app-logo" data-testid="market-title">
           Mercado de Cockteles
         </span>
-        <a className="btn btn-secondary" href="#admin">
-          Ir a Admin
-        </a>
       </header>
 
       <main className="app-main">
