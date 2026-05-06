@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import MarketListView from '../components/MarketListView'
 import MarketBuyModal from '../components/MarketBuyModal'
 import { getItems } from '../lib/storage'
@@ -7,10 +7,15 @@ import {
   saveTradingState,
   ensureTradingStateForItems,
 } from '../lib/userTradingStorage'
-import { applyBuy, applyMinuteTick } from '../lib/userTradingEngine'
+import {
+  applyBuy,
+  applyMinuteTick,
+  appendPricePoint,
+  appendActivityPoint,
+  getActivitySummary,
+} from '../lib/userTradingEngine'
 
 const TICK_MS = 60_000
-const TICK_15MIN_MS = 15 * 60 * 1000
 
 export default function UserMarketPage() {
   const [items, setItems] = useState(() => getItems())
@@ -45,16 +50,42 @@ export default function UserMarketPage() {
     const intervalId = window.setInterval(() => {
       setTradingState(prev => {
         const next = { ...prev }
+        const nowIso = new Date().toISOString()
 
         for (const item of items) {
           const current = next[item.id]
           if (!current) continue
 
-          const newPrice = applyMinuteTick(Number(current.precioActualBs), Number(item.precioMinimo))
+          const newPrice = applyMinuteTick(
+            Number(current.precioActualBs),
+            Number(item.precioMinimo),
+            Number(item.precioPromedio),
+          )
+          const historialPrecios = appendPricePoint(current.historialPrecios, newPrice, nowIso)
+
+          // Simulacion basica de actividad de mercado por minuto.
+          const operacionesSimuladas = Math.random() < 0.65 ? Math.floor(Math.random() * 3) : 0
+          const volumenSimulado = operacionesSimuladas === 0
+            ? 0
+            : operacionesSimuladas + Math.floor(Math.random() * 5)
+          const actividad15Min = appendActivityPoint(
+            current.actividad15Min,
+            volumenSimulado,
+            operacionesSimuladas,
+            nowIso,
+          )
+          const { volumen15Min, operaciones15Min } = getActivitySummary(actividad15Min)
+
           next[item.id] = {
             ...current,
             precioActualBs: newPrice,
-            ultimaActualizacion: new Date().toISOString(),
+            precioHace15Min: Number(historialPrecios[0].precioBs),
+            historialPrecios,
+            actividad15Min,
+            volumen15Min,
+            operaciones15Min,
+            ultimaActualizacion: nowIso,
+            ultimaActualizacion15Min: nowIso,
           }
         }
 
@@ -63,31 +94,6 @@ export default function UserMarketPage() {
         return next
       })
     }, TICK_MS)
-
-    return () => window.clearInterval(intervalId)
-  }, [items])
-
-  // Actualizar precio hace 15 min cada 15 minutos
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setTradingState(prev => {
-        const next = { ...prev }
-
-        for (const item of items) {
-          const current = next[item.id]
-          if (!current) continue
-
-          next[item.id] = {
-            ...current,
-            precioHace15Min: Number(current.precioActualBs),
-            ultimaActualizacion15Min: new Date().toISOString(),
-          }
-        }
-
-        saveTradingState(next)
-        return next
-      })
-    }, TICK_15MIN_MS)
 
     return () => window.clearInterval(intervalId)
   }, [items])
@@ -103,19 +109,29 @@ export default function UserMarketPage() {
 
       const precioUnitario = Number(current.precioActualBs)
       const newPrice = applyBuy(precioUnitario, quantity)
+      const nowIso = new Date().toISOString()
+      const historialPrecios = appendPricePoint(current.historialPrecios, newPrice, nowIso)
+      const actividad15Min = appendActivityPoint(current.actividad15Min, quantity, 1, nowIso)
+      const { volumen15Min, operaciones15Min } = getActivitySummary(actividad15Min)
 
       const next = {
         ...prev,
         [item.id]: {
           ...current,
           precioActualBs: newPrice,
-          ultimaActualizacion: new Date().toISOString(),
+          precioHace15Min: Number(historialPrecios[0].precioBs),
+          historialPrecios,
+          actividad15Min,
+          volumen15Min,
+          operaciones15Min,
+          ultimaActualizacion: nowIso,
+          ultimaActualizacion15Min: nowIso,
           volumenComprado: Number(current.volumenComprado || 0) + quantity,
           ultimaCompra: {
             cantidad: quantity,
             precioUnitario,
             total: precioUnitario * quantity,
-            fecha: new Date().toISOString(),
+            fecha: nowIso,
           },
         },
       }
@@ -145,7 +161,7 @@ export default function UserMarketPage() {
 
       <main className="app-main">
         <section className="card market-info">
-          <p>Haz click en un cocktail para comprar. El precio baja 1 Bs por minuto.</p>
+          <p>Haz click en un cocktail para comprar. El precio fluctua con deriva y volatilidad.</p>
           <p className="market-tick" data-testid="market-last-tick">
             Último tick: {new Date(lastTick).toLocaleTimeString('es')}
           </p>

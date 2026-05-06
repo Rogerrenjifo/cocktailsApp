@@ -40,15 +40,26 @@ export function ensureTradingStateForItems(items, currentState) {
 
   for (const item of items) {
     const syntheticReference = getSyntheticReferencePrice(item)
+    const now = new Date()
+    const nowIso = now.toISOString()
+    const fifteenMinAgoIso = new Date(now.getTime() - 15 * 60 * 1000).toISOString()
+    const promedio = Number(item.precioPromedio)
 
     if (!next[item.id]) {
       next[item.id] = {
-        precioActualBs: Number(item.precioPromedio),
+        precioActualBs: promedio,
         precioHace15Min: syntheticReference,
         precioReferenciaInicialBs: syntheticReference,
-        ultimaActualizacion: new Date().toISOString(),
-        ultimaActualizacion15Min: new Date().toISOString(),
+        ultimaActualizacion: nowIso,
+        ultimaActualizacion15Min: nowIso,
         volumenComprado: 0,
+        volumen15Min: 0,
+        operaciones15Min: 0,
+        historialPrecios: [
+          { precioBs: syntheticReference, timestamp: fifteenMinAgoIso },
+          { precioBs: promedio, timestamp: nowIso },
+        ],
+        actividad15Min: [],
         ultimaCompra: null,
       }
       changed = true
@@ -68,6 +79,54 @@ export function ensureTradingStateForItems(items, currentState) {
       next[item.id] = {
         ...next[item.id],
         precioHace15Min: syntheticReference,
+      }
+      changed = true
+    }
+
+    if (!Array.isArray(current.historialPrecios)) {
+      next[item.id] = {
+        ...next[item.id],
+        historialPrecios: [
+          { precioBs: Number(current.precioHace15Min ?? syntheticReference), timestamp: fifteenMinAgoIso },
+          { precioBs: Number(current.precioActualBs ?? promedio), timestamp: nowIso },
+        ],
+      }
+      changed = true
+    }
+
+    if (Array.isArray(current.historialPrecios) && current.historialPrecios.length > 0) {
+      const normalizedHistory = current.historialPrecios.map(point => ({
+        precioBs: Number(point.precioBs ?? point.precio ?? promedio),
+        timestamp: point.timestamp ?? nowIso,
+      }))
+      const needsHistoryNormalization = normalizedHistory.some(
+        (point, index) =>
+          point.precioBs !== Number((current.historialPrecios[index] || {}).precioBs) ||
+          point.timestamp !== (current.historialPrecios[index] || {}).timestamp,
+      )
+
+      if (needsHistoryNormalization) {
+        next[item.id] = {
+          ...next[item.id],
+          historialPrecios: normalizedHistory,
+        }
+        changed = true
+      }
+    }
+
+    if (!Array.isArray(current.actividad15Min)) {
+      next[item.id] = {
+        ...next[item.id],
+        actividad15Min: [],
+      }
+      changed = true
+    }
+
+    if (current.volumen15Min === undefined || current.operaciones15Min === undefined) {
+      next[item.id] = {
+        ...next[item.id],
+        volumen15Min: Number(current.volumen15Min || 0),
+        operaciones15Min: Number(current.operaciones15Min || 0),
       }
       changed = true
     }

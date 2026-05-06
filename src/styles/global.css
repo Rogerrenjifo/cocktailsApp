@@ -302,6 +302,39 @@ label { font-size: .8rem; color: var(--text-muted); letter-spacing: .03em; text-
   min-width: 120px;
   text-align: right;
 }
+.col-volumen {
+  min-width: 96px;
+  text-align: right;
+}
+.col-volumen small {
+  display: block;
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+.market-price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .2rem;
+}
+.market-sparkline {
+  width: 64px;
+  height: 18px;
+  color: var(--text-muted);
+}
+.market-cambio-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .1rem;
+}
+.market-cambio-percent {
+  font-weight: 700;
+}
+.market-cambio-abs {
+  font-size: .72rem;
+  color: var(--text-muted);
+}
 .market-table .positivo {
   color: #2dbd85;
 }
@@ -471,6 +504,16 @@ label { font-size: .8rem; color: var(--text-muted); letter-spacing: .03em; text-
   .market-table th,
   .market-table td {
     padding: .45rem .4rem;
+  }
+  .market-price-stack,
+  .market-cambio-stack {
+    align-items: flex-start;
+  }
+  .market-sparkline {
+    width: 52px;
+  }
+  .col-volumen {
+    min-width: 74px;
   }
   .market-modal {
     max-width: 100%;
