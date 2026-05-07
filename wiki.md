@@ -28,10 +28,11 @@ Hash routing is used.
 
 Routes:
 - #admin: admin login and cocktail management
-- #market: public trading-style market page
+- #market: public trading-style market page (default)
 
 Route behavior:
-- App defaults to admin view unless hash is #market.
+- App defaults to market view unless hash is #admin.
+- Base URL without hash opens the public market.
 
 ## 4. Product Flows
 ### 4.1 Admin Flow
@@ -55,8 +56,9 @@ Validation rules in admin form:
 - No login required.
 - Main page shows a table with:
   - Nombre
-  - Precio Actual
-  - Cambio (15min)
+  - Precio Actual (con sparkline)
+  - Cambio (15min) en porcentaje y Bs
+  - Vol 15m (volumen y operaciones)
 - Clicking a row opens buy modal for selected cocktail.
 
 Buy modal includes:
@@ -120,6 +122,11 @@ Session shape:
 Per cocktail state shape:
 - precioActualBs
 - precioHace15Min
+- precioReferenciaInicialBs
+- historialPrecios
+- actividad15Min
+- volumen15Min
+- operaciones15Min
 - ultimaActualizacion
 - ultimaActualizacion15Min
 - volumenComprado
@@ -128,18 +135,21 @@ Per cocktail state shape:
 ## 7. Trading Rules (Source of Truth)
 Initial state:
 - If cocktail has no trading state, precioActualBs starts at precioPromedio.
-- precioHace15Min also starts at precioPromedio.
+- precioHace15Min starts from a synthetic reference close to precioPromedio.
 
 Minute tick:
-- Every 60 seconds, price decreases by 1 Bs.
-- Price cannot go below precioMinimo.
+- Every 60 seconds, price is updated with mean reversion + bounded random noise + sell pressure.
+- Price is clamped between precioMinimo and a max bound based on precioPromedio.
+- Each tick appends a point to historialPrecios.
+- Each tick can add simulated market activity used for volumen/ops.
 
 Buy impact:
 - Buying quantity q increases current price by q Bs immediately.
+- Buy also updates historialPrecios and actividad15Min.
 
 15-minute reference update:
-- Every 15 minutes, precioHace15Min is set to current price.
-- Displayed percentage change is calculated against precioHace15Min.
+- Change is calculated against the reference price from the stored history window.
+- UI shows both percentage and absolute Bs change.
 
 Offline behavior:
 - No retroactive catch-up if page was closed.
@@ -164,11 +174,13 @@ Offline behavior:
 ### 8.3 Market Components
 - src/pages/UserMarketPage.jsx
   - Loads catalog and trading state
-  - Runs 60s and 15min timers
+  - Runs 60s market tick loop
+  - Simulates market activity (volumen/operaciones)
   - Handles row selection and buy flow
 - src/components/MarketListView.jsx
   - Renders market table and row click behavior
   - Applies color semantics for trend and change
+  - Displays sparkline and Vol 15m column
 - src/components/MarketBuyModal.jsx
   - Quantity input, estimated total, and buy action
 - src/components/MarketCocktailCard.jsx
@@ -183,14 +195,18 @@ Offline behavior:
 - src/lib/validation.js
   - Cocktail form business validations
 - src/lib/userTradingStorage.js
-  - Trading state persistence and bootstrap
+  - Trading state persistence, bootstrap and backward-compatible enrichment
 - src/lib/userTradingEngine.js
   - clampToMin
   - applyMinuteTick
+  - appendPricePoint
+  - appendActivityPoint
+  - getActivitySummary
   - applyBuy
   - parseQuantity
   - formatBs
   - calculateChangePercent
+  - calculateChangeAbsolute
 
 ## 10. Market UI Semantics
 Price trend in list (relative to initial average):
@@ -201,7 +217,13 @@ Price trend in list (relative to initial average):
 15-minute change formatting:
 - Positive: green with plus sign
 - Negative: red
-- Near zero: displays dash character
+- Near zero: displays 0.00% and 0.00 Bs
+
+Price column extras:
+- Sparkline visual for recent history
+
+Volume column:
+- Shows volume and operation count with suffix "ops"
 
 ## 11. Test ID Contract
 ### Top-level market IDs

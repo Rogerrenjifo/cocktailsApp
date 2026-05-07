@@ -1,12 +1,14 @@
 Feature: Mercado publico de cockteles con precio dinamico en Bs
   Como usuario publico
   Quiero ver y comprar cockteles en una experiencia tipo trading basico
-  Para operar con una tabla de mercado y compra por modal
+  Para operar con una tabla de mercado realista y compra por modal
 
   Background:
     Given la aplicacion corre solo en frontend
     And existe la data base de cockteles en localStorage bajo "cocktail-app-items"
     And el estado de trading se guarda en "cocktail-user-trading-state"
+    And la ruta por defecto abre "#market"
+    And existen tres cockteles por defecto: Tequila Shot, Jagerbomb y B-52
 
   Scenario: Mostrar pagina publica sin login
     Given no existe sesion admin activa
@@ -18,7 +20,8 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     Given existen cockteles cargados por admin
     When ingreso a la pagina publica de mercado
     Then debo ver todos los cockteles en la tabla de mercado
-    And cada fila debe mostrar nombre, precio actual y cambio en 15 minutos
+    And cada fila debe mostrar nombre, precio actual, cambio en 15 minutos y volumen 15 minutos
+    And el precio actual debe incluir un sparkline
 
   Scenario: Estado vacio cuando no hay cockteles
     Given no existen cockteles en "cocktail-app-items"
@@ -43,16 +46,17 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     When hago click en "Cerrar"
     Then debo volver a ver solo la tabla de mercado
 
-  Scenario: Bajar 1 Bs por minuto mientras la pagina esta abierta
+  Scenario: Aplicar tick de mercado por minuto con volatilidad
     Given existe un cocktail "Negroni" con precioActualBs 30 y precioMinimo 20
     And estoy en la pagina publica de mercado abierta
     When transcurre 1 minuto en la pagina
-    Then el precio actual de "Negroni" debe ser 29 Bs
+    Then el precio actual de "Negroni" debe cambiar segun el motor de volatilidad
+    And el precio no debe ser menor al precio minimo
 
   Scenario: No bajar del precio minimo
     Given existe un cocktail "Martini" con precioActualBs 10 y precioMinimo 10
     And estoy en la pagina publica de mercado abierta
-    When transcurre 1 minuto en la pagina
+    When transcurren varios ticks de mercado
     Then el precio actual de "Martini" debe seguir en 10 Bs
 
   Scenario: Comprar una unidad sube 1 Bs inmediatamente
@@ -149,13 +153,20 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
   Scenario: Cambio neutro se muestra con guion
     Given existe un cocktail "Mojito" con precioActualBs 25 y precioHace15Min 25
     When ingreso a la pagina publica de mercado
-    Then el cambio de "Mojito" debe mostrarse como "—"
+    Then el cambio de "Mojito" debe mostrarse como 0.00%
 
-  Scenario: Cambio porcentual se actualiza cada 15 minutos
+  Scenario: Cambio muestra porcentaje y valor absoluto
     Given existe un cocktail "Negroni" con precioHace15Min 30 y precioActualBs 33
+    When ingreso a la pagina publica de mercado
+    Then debo ver un porcentaje positivo para "Negroni"
+    And debo ver un valor absoluto en Bs para "Negroni"
+
+  Scenario: Mostrar volumen y operaciones del periodo
+    Given existe un cocktail "Jagerbomb" en mercado
     And estoy en la pagina publica de mercado abierta
-    When transcurren 15 minutos
-    Then el valor de referencia "precioHace15Min" de "Negroni" debe actualizarse a 33
+    When ocurre actividad de mercado en varios ticks
+    Then debo ver el volumen acumulado en la columna "Vol 15m"
+    And debo ver el numero de operaciones con el texto "ops"
 
   Scenario: Modal expone data-testid obligatorios
     Given hago click en la fila de "Mojito"

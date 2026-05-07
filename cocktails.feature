@@ -6,10 +6,22 @@ Feature: Administracion local de cockteles
   Background:
     Given la aplicacion se ejecuta localmente en el navegador
     And existe un unico usuario admin con usuario "roger" y contrasenia "12345"
+    And la ruta por defecto abre el mercado publico
+    And el admin se accede por "#admin"
+
+  Scenario: Listar cockteles por defecto al primer acceso
+    Given no existe historial previo en localStorage
+    When ingreso a la aplicacion
+    Then debo ver tres cockteles pre-cargados por defecto
+    And uno de ellos es "Tequila Shot" con precio minimo 10 y promedio 30
+    And uno de ellos es "Jagerbomb" con precio minimo 20 y promedio 30
+    And uno de ellos es "B-52" con precio minimo 25 y promedio 40
 
   Scenario: Login exitoso con credenciales validas
     Given no existe una sesion activa
-    When ingreso el usuario "roger"
+    When navego a la ruta "#admin"
+    And veo el formulario de login
+    And ingreso el usuario "roger"
     And ingreso la contrasenia "12345"
     And hago clic en "Iniciar sesion"
     Then debo ver la pantalla principal de administracion
@@ -76,7 +88,8 @@ Feature: Administracion local de cockteles
 
   Scenario: Login fallido por credenciales invalidas
     Given no existe una sesion activa
-    When ingreso el usuario "roger"
+    When navego a la ruta "#admin"
+    And ingreso el usuario "roger"
     And ingreso la contrasenia "00000"
     And hago clic en "Iniciar sesion"
     Then no debo acceder a la pantalla principal
