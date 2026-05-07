@@ -7,7 +7,7 @@ import CocktailList from './components/CocktailList'
 import UserMarketPage from './pages/UserMarketPage'
 
 function getViewFromHash() {
-  return window.location.hash === '#market' ? 'market' : 'admin'
+  return window.location.hash === '#admin' ? 'admin' : 'market'
 }
 
 export default function App() {
