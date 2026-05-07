@@ -80,7 +80,6 @@ export default function App() {
           <button
             className="btn btn-secondary"
             onClick={handleLogout}
-            data-testid="btn-logout"
           >
             Cerrar sesión
           </button>

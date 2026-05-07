@@ -27,14 +27,14 @@ function buildSparklinePoints(history, currentPrice) {
 export default function MarketListView({ items, tradingState, onRowClick, emptyMessage }) {
   if (items.length === 0) {
     return (
-      <section className="card market-empty" data-testid="market-empty-state">
+      <section className="card market-empty">
         {emptyMessage || 'Aún no hay cockteles disponibles en el mercado.'}
       </section>
     )
   }
 
   return (
-    <section className="market-table-section card" data-testid="market-list">
+    <section className="market-table-section card">
       <table className="market-table">
         <thead>
           <tr>
@@ -66,13 +66,12 @@ export default function MarketListView({ items, tradingState, onRowClick, emptyM
                 key={item.id}
                 className="market-row"
                 onClick={() => onRowClick(item, trading)}
-                data-testid={`market-row-${item.id}`}
                 style={{ cursor: 'pointer' }}
               >
-                <td className="col-nombre" data-testid={`market-row-nombre-${item.id}`}>
+                <td className="col-nombre">
                   {item.nombre}
                 </td>
-                <td className={`col-precio precio-${priceTrend}`} data-testid={`market-row-precio-${item.id}`}>
+                <td className={`col-precio precio-${priceTrend}`}>
                   <div className="market-price-stack">
                     <span>{formatBs(trading.precioActualBs)}</span>
                     <svg
@@ -87,7 +86,6 @@ export default function MarketListView({ items, tradingState, onRowClick, emptyM
                 </td>
                 <td
                   className={`col-cambio ${normalizedChange > 0 ? 'positivo' : normalizedChange < 0 ? 'negativo' : 'neutro'}`}
-                  data-testid={`market-row-cambio-${item.id}`}
                 >
                   <div className="market-cambio-stack">
                     <span className="market-cambio-percent">{formattedChangePercent}</span>

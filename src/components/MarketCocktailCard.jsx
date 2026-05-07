@@ -23,12 +23,12 @@ export default function MarketCocktailCard({ item, trading, onBuy }) {
   }
 
   return (
-    <article className="market-card" data-testid={`market-item-${item.id}`}>
+    <article className="market-card">
       <div className="market-card-head">
-        <h3 className="market-item-name" data-testid={`market-nombre-${item.id}`}>
+        <h3 className="market-item-name">
           {item.nombre}
         </h3>
-        <span className={`market-variation ${trading.variacion || 'sin-cambio'}`} data-testid={`market-variacion-${item.id}`}>
+        <span className={`market-variation ${trading.variacion || 'sin-cambio'}`}>
           {trading.variacion === 'subio' ? 'Subio' : trading.variacion === 'bajo' ? 'Bajo' : 'Sin cambio'}
         </span>
       </div>
@@ -36,15 +36,15 @@ export default function MarketCocktailCard({ item, trading, onBuy }) {
       <div className="market-prices">
         <div className="market-price-row">
           <span>Precio actual</span>
-          <strong data-testid={`market-precio-actual-${item.id}`}>{formatBs(trading.precioActualBs)}</strong>
+          <strong>{formatBs(trading.precioActualBs)}</strong>
         </div>
         <div className="market-price-row">
           <span>Precio promedio</span>
-          <strong data-testid={`market-precio-promedio-${item.id}`}>{formatBs(item.precioPromedio)}</strong>
+          <strong>{formatBs(item.precioPromedio)}</strong>
         </div>
         <div className="market-price-row">
           <span>Precio minimo</span>
-          <strong data-testid={`market-precio-minimo-${item.id}`}>{formatBs(item.precioMinimo)}</strong>
+          <strong>{formatBs(item.precioMinimo)}</strong>
         </div>
       </div>
 
@@ -57,25 +57,24 @@ export default function MarketCocktailCard({ item, trading, onBuy }) {
           step="1"
           value={quantityInput}
           onChange={e => setQuantityInput(e.target.value)}
-          data-testid={`market-cantidad-${item.id}`}
         />
 
-        <div className="market-total" data-testid={`market-total-estimado-${item.id}`}>
+        <div className="market-total">
           Total estimado: {formatBs(totalEstimado)}
         </div>
 
         {error && (
-          <p className="field-error" data-testid={`market-error-cantidad-${item.id}`}>
+          <p className="field-error">
             {error}
           </p>
         )}
         {success && (
-          <p className="market-success" data-testid={`market-feedback-exito-${item.id}`}>
+          <p className="market-success">
             {success}
           </p>
         )}
 
-        <button className="btn btn-primary" onClick={handleBuy} data-testid={`market-btn-comprar-${item.id}`}>
+        <button className="btn btn-primary" onClick={handleBuy}>
           Comprar
         </button>
       </div>

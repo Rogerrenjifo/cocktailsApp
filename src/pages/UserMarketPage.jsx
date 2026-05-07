@@ -152,9 +152,9 @@ export default function UserMarketPage() {
   }
 
   return (
-    <div className="market-page app-wrapper" data-testid="market-page">
+    <div className="market-page app-wrapper">
       <header className="app-header">
-        <span className="app-logo" data-testid="market-title">
+        <span className="app-logo">
           Mercado de Cockteles
         </span>
       </header>
@@ -162,7 +162,7 @@ export default function UserMarketPage() {
       <main className="app-main">
         <section className="card market-info">
           <p>Haz click en un cocktail para comprar. El precio fluctua con deriva y volatilidad.</p>
-          <p className="market-tick" data-testid="market-last-tick">
+          <p className="market-tick">
             Último tick: {new Date(lastTick).toLocaleTimeString('es')}
           </p>
         </section>

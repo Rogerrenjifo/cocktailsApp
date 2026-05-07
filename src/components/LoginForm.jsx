@@ -17,7 +17,7 @@ export default function LoginForm({ onSuccess }) {
 
   return (
     <div className="login-wrapper">
-      <form className="login-card" onSubmit={handleSubmit} data-testid="login-form">
+      <form className="login-card" onSubmit={handleSubmit}>
         <div className="login-logo">🍹</div>
         <h1 className="login-title">Cocktail Admin</h1>
         <p className="login-subtitle">Inicia sesión para continuar</p>
@@ -30,7 +30,6 @@ export default function LoginForm({ onSuccess }) {
             value={username}
             onChange={e => setUsername(e.target.value)}
             autoComplete="username"
-            data-testid="input-username"
           />
         </div>
 
@@ -42,17 +41,16 @@ export default function LoginForm({ onSuccess }) {
             value={password}
             onChange={e => setPassword(e.target.value)}
             autoComplete="current-password"
-            data-testid="input-password"
           />
         </div>
 
         {error && (
-          <p className="error-msg" data-testid="login-error">
+          <p className="error-msg">
             {error}
           </p>
         )}
 
-        <button type="submit" className="btn btn-primary btn-full" data-testid="btn-login">
+        <button type="submit" className="btn btn-primary btn-full">
           Iniciar sesión
         </button>
       </form>
