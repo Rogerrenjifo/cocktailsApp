@@ -6,6 +6,15 @@ Feature: Administracion local de cockteles
   Background:
     Given la aplicacion se ejecuta localmente en el navegador
     And existe un unico usuario admin con usuario "roger" y contrasenia "12345"
+    And la aplicacion pre-carga tres cockteles por defecto: Tequila Shot, Jagerbomb y B-52
+
+  Scenario: Listar cockteles por defecto al primer acceso
+    Given no existe historial previo en localStorage
+    When ingreso a la aplicacion
+    Then debo ver tres cockteles pre-cargados por defecto
+    And uno de ellos es "Tequila Shot" con precio minimo 10 y promedio 30
+    And uno de ellos es "Jagerbomb" con precio minimo 20 y promedio 30
+    And uno de ellos es "B-52" con precio minimo 25 y promedio 40
 
   Scenario: Login exitoso con credenciales validas
     Given no existe una sesion activa

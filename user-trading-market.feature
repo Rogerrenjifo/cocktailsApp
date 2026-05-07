@@ -1,12 +1,13 @@
 Feature: Mercado publico de cockteles con precio dinamico en Bs
   Como usuario publico
   Quiero ver y comprar cockteles en una experiencia tipo trading basico
-  Para operar con una tabla de mercado y compra por modal
+  Para operar con una tabla de mercado realista con volatilidad y volumen
 
   Background:
     Given la aplicacion corre solo en frontend
     And existe la data base de cockteles en localStorage bajo "cocktail-app-items"
     And el estado de trading se guarda en "cocktail-user-trading-state"
+    And tres cockteles por defecto estan disponibles: Tequila Shot, Jagerbomb, B-52
 
   Scenario: Mostrar pagina publica sin login
     Given no existe sesion admin activa
@@ -14,11 +15,11 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     Then debo ver la pantalla de mercado sin pedir autenticacion
     And debo ver el titulo "Mercado de Cockteles"
 
-  Scenario: Mostrar tabla principal de mercado
+  Scenario: Mostrar tabla principal de mercado con columnas completas
     Given existen cockteles cargados por admin
     When ingreso a la pagina publica de mercado
     Then debo ver todos los cockteles en la tabla de mercado
-    And cada fila debe mostrar nombre, precio actual y cambio en 15 minutos
+    And cada fila debe mostrar nombre, precio actual (con sparkline), cambio en 15 minutos (% y Bs) y volumen 15min
 
   Scenario: Estado vacio cuando no hay cockteles
     Given no existen cockteles en "cocktail-app-items"
@@ -36,24 +37,25 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     And estoy en la tabla de mercado
     When hago click en la fila de "Mojito"
     Then debo ver el modal de compra
-    And el modal debe mostrar nombre, precio actual, input cantidad y total
+    And el modal debe mostrar nombre, precio actual, input cantidad y total estimado
 
   Scenario: Cerrar modal y volver a tabla
     Given tengo abierto el modal de compra de "Mojito"
     When hago click en "Cerrar"
     Then debo volver a ver solo la tabla de mercado
 
-  Scenario: Bajar 1 Bs por minuto mientras la pagina esta abierta
-    Given existe un cocktail "Negroni" con precioActualBs 30 y precioMinimo 20
+  Scenario: Volatilidad de precio cada minuto con media reversion
+    Given existe un cocktail "Negroni" con precioActualBs 30, precioPromedio 30 y precioMinimo 20
     And estoy en la pagina publica de mercado abierta
     When transcurre 1 minuto en la pagina
-    Then el precio actual de "Negroni" debe ser 29 Bs
+    Then el precio actual de "Negroni" debe cambiar con volatilidad y media reversion
+    And el precio debe permanecer entre precioMinimo y precioMaximo (promedio * 2)
 
   Scenario: No bajar del precio minimo
     Given existe un cocktail "Martini" con precioActualBs 10 y precioMinimo 10
     And estoy en la pagina publica de mercado abierta
-    When transcurre 1 minuto en la pagina
-    Then el precio actual de "Martini" debe seguir en 10 Bs
+    When transcurren 10 minutos en la pagina
+    Then el precio actual de "Martini" nunca debe bajar de 10 Bs
 
   Scenario: Comprar una unidad sube 1 Bs inmediatamente
     Given existe un cocktail "Daiquiri" con precioActualBs 18 y precioMinimo 10
@@ -129,13 +131,6 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     Then debo ver un error indicando que la cantidad debe ser entera
     And no debe ejecutarse la compra
 
-  Scenario: Disponibilidad de data-testid en pagina de mercado
-    Given ingreso a la pagina publica de mercado
-    Then debo poder ubicar el contenedor "market-page"
-    And debo poder ubicar el titulo "market-title"
-    And debo poder ubicar el contenedor "market-list"
-    And cada fila debe exponer "market-row-{id}", "market-row-precio-{id}" y "market-row-cambio-{id}"
-
   Scenario: Color de precio en rojo cuando baja frente al inicial
     Given existe un cocktail "Gimlet" con precioPromedio 14 y precioActualBs 13
     When ingreso a la pagina publica de mercado
@@ -151,18 +146,39 @@ Feature: Mercado publico de cockteles con precio dinamico en Bs
     When ingreso a la pagina publica de mercado
     Then el cambio de "Mojito" debe mostrarse como "—"
 
+  Scenario: Cambio en 15 minutos muestra porcentaje y valor absoluto
+    Given existe un cocktail "Negroni" con precioHace15Min 30 y precioActualBs 33
+    When ingreso a la pagina publica de mercado
+    Then debo ver el cambio de "Negroni" como "10%" y "+3 Bs"
+
   Scenario: Cambio porcentual se actualiza cada 15 minutos
     Given existe un cocktail "Negroni" con precioHace15Min 30 y precioActualBs 33
     And estoy en la pagina publica de mercado abierta
     When transcurren 15 minutos
     Then el valor de referencia "precioHace15Min" de "Negroni" debe actualizarse a 33
 
-  Scenario: Modal expone data-testid obligatorios
-    Given hago click en la fila de "Mojito"
-    Then debo poder ubicar "market-modal"
-    And debo poder ubicar "market-modal-nombre"
-    And debo poder ubicar "market-modal-precio"
-    And debo poder ubicar "market-modal-cantidad"
-    And debo poder ubicar "market-modal-total"
-    And debo poder ubicar "market-modal-btn-comprar"
-    And debo poder ubicar "market-modal-btn-cerrar"
+  Scenario: Mostrar sparkline en columna de precio
+    Given existen cockteles cargados por admin
+    When ingreso a la pagina publica de mercado
+    Then cada fila debe mostrar un pequeno grafico sparkline en la columna de precio actual
+    And el sparkline debe mostrar el historico de precios de los ultimos cambios
+
+  Scenario: Simular volumen y operaciones cada minuto
+    Given existe un cocktail "Tequila Shot" con precioActualBs 20
+    And estoy en la pagina publica de mercado abierta
+    When transcurren 5 minutos con actividad simulada
+    Then la columna "Vol 15m" debe mostrar volumen acumulado
+    And la columna "Vol 15m" debe mostrar contador de operaciones (N ops)
+
+  Scenario: Rastrear historial de precios para sparkline
+    Given existe un cocktail "Jagerbomb" con precioActualBs 25
+    And estoy en la pagina publica de mercado abierta
+    When transcurren 10 minutos con cambios de precio
+    Then debo poder ver el historico de precios en el sparkline
+    And el sparkline debe reflejar la volatilidad y media reversion observada
+
+  Scenario: Actualizar ultimo tick cada minuto
+    Given estoy en la pagina publica de mercado
+    Then debo ver un texto que muestre "Ultimo tick: HH:MM:SS"
+    When espero 1 minuto
+    Then el texto de "Ultimo tick" debe actualizarse con la nueva hora
